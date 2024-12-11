@@ -107,37 +107,41 @@ class DoacoesController < ApplicationController
   end
 
   def modifica_agendamento
-  begin
-    id = params[:id]
-    id_doacao = params[:id_doacao]
-    nova_data = params[:nova_data]
+    begin
+      id = params[:id]
+      id_doacao = params[:id_doacao]
+      nova_data = params[:nova_data]
 
-    if id.blank? || id_doacao.blank? || nova_data.blank?
-      render json: { error: "campos inválidos" }, status: :bad_request
-      nil
-    end
-
-    doacao = Doacao.find_by(id: id_doacao, user_id: id)
-    doacoes = Doacoes.find(id).pluck(:donation_date)
-    gender = User.find(id).gender
-
-    doacoes.each do |data|
-      validador  = validador.new(id, nova_data, data, gender)
-
-      unless validador.confirma_doacao
-        render json: {
-          error: "Data inválida para doação"
-        }
-        return
+      if id.blank? || id_doacao.blank? || nova_data.blank?
+        render json: { error: "campos inválidos" }, status: :bad_request
+        nil
       end
-    end
-    doacao.update(donation_date: nova_data)
-  rescue ActiveRecord::RecordNotFound => e
-    render json: { error: "Doação não encontrada: #{e.message}" }, status: :not_found
-  rescue StandardError => e
-    render json: { error: e.message }, status: :unprocessable_entity
-  end
 
+      doacao = Doacao.find_by(id: id_doacao, user_id: id)
+      doacoes = Doacao.where(user_id: id).pluck(:donation_date) # Corrigido aqui para Doacao
+      gender = User.find(id).gender
+
+      doacoes.each do |data|
+        validador = Validator.new(id, nova_data, data, gender)
+
+        unless validador.confirma_doacao
+          render json: { error: "Data inválida para doação" }
+          return
+        end
+        unless validador.datas_iguais
+          render json: { error: "Data inválida para doação" }
+          return
+        end
+      end
+      doacao.update(donation_date: nova_data)
+      render json: { message: "Agendamento alterado com sucesso." }, status: :ok
+
+    rescue ActiveRecord::RecordNotFound => e
+      render json: { error: "Doação não encontrada: #{e.message}" }, status: :not_found
+    rescue StandardError => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+  end
 
   def deleta_agendamento
     begin

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "/doacoes/usuario", to: "doacoes#por_usuario"
   get "/usuarios", to: "usuarios#index"
   delete "/doacoes", to: "doacoes#deleta_agendamento"
+  put "/doacoes", to: "doacoes#modifica_agendamento"
   # Defines the root path route ("/")
   # root "posts#index"
 end
