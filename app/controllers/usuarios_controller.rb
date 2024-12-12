@@ -87,8 +87,6 @@ class UsuariosController < ApplicationController
 
       telefone = Telefone.find_by(user_id: user.id)
 
-
-
       if telefone.nil?
         render json: { error: "Telefone não encontrado" }, status: :not_found
       else
