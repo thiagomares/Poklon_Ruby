@@ -52,12 +52,18 @@ class UsuariosController < ApplicationController
         return
       end
 
-      telefone = Telefone.create(numero: numero, tipo: tipo, user_id: usuario)
-      if telefone.save
-        render json: telefone, status: :created
-      else
-        render json: { error: "Erro ao adicionar o telefone" }, status: :unprocessable_entity
+      telefones_guardados = Telefone.where(user_id: usuario.id).pluck(:numero)
+
+      telefones_guardados.each do |telefone_guardado|
+        if telefone_guardado == numero
+          render json: { error: "Telefone já cadastrado" }, status: :conflict
+          return
+        end
       end
+
+      telefone = Telefone.create(numero: numero, tipo: tipo, user_id: usuario.id)
+      render json: telefone, status: :created
+
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
