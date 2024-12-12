@@ -11,16 +11,22 @@ class UsuariosController < ApplicationController
       gender = params[:gender]
       dob = params[:dob]
       tipo_sanguineo = params[:tipo_sanguineo]
-      data_nascimento = Date.parse(dob) rescue nil
+      data_nascimento = Date.parse(dob)
 
       if username.blank? || full_name.blank? || data_nascimento.nil?
         render json: { error: "Dados ausentes" }, status: :bad_request
         return
       end
 
+      soma_data_nascimento = data_nascimento.year - Date.today.year
+
+      if soma_data_nascimento.abs <= 16
+        render json: { error: "Usuário menor de idade" }, status: :unprocessable_entity
+        return
+      end
+
       if username != User.find_by(username: username)&.username
         user = User.create(username: username, full_name: full_name, gender: gender, dob: data_nascimento, tipo_sanguineo: tipo_sanguineo)
-
         if user.save
           render json: user, status: :created
         else
@@ -29,6 +35,7 @@ class UsuariosController < ApplicationController
       else
         render json: { error: "Usuário já existe" }, status: :conflict
       end
+
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
