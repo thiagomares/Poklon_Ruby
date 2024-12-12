@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   get "/usuarios", to: "usuarios#index"
   delete "/doacoes", to: "doacoes#deleta_agendamento"
   put "/doacoes", to: "doacoes#modifica_agendamento"
+  post "/usuarios/telefone", to: "usuarios#adiciona_telefone"
+  get "/usuarios/telefone", to: "usuarios#retorna_telefone"
   # Defines the root path route ("/")
   # root "posts#index"
 end

@@ -10,13 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_10_230459) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_11_235054) do
   create_table "doacaos", force: :cascade do |t|
     t.date "donation_date"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_doacaos_on_user_id"
+  end
+
+  create_table "telefones", force: :cascade do |t|
+    t.string "numero"
+    t.string "tipo"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_telefones_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -30,4 +39,5 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_10_230459) do
   end
 
   add_foreign_key "doacaos", "users"
+  add_foreign_key "telefones", "users"
 end

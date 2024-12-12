@@ -33,4 +33,63 @@ class UsuariosController < ApplicationController
       render json: { error: e.message }, status: :unprocessable_entity
     end
   end
+
+  def adiciona_telefone
+    begin
+      user = params[:user_id]
+      numero = params[:numero]
+      tipo = params[:tipo]
+
+      if user.blank? || numero.blank? || tipo.blank?
+        render json: { error: "Dados ausentes" }, status: :bad_request
+        return
+      end
+
+      usuario = User.find_by(id: user)
+
+      if user.nil?
+        render json: { error: "Usuário não encontrado" }, status: :not_found
+        return
+      end
+
+      telefone = Telefone.create(numero: numero, tipo: tipo, user_id: usuario)
+      if telefone.save
+        render json: telefone, status: :created
+      else
+        render json: { error: "Erro ao adicionar o telefone" }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+  end
+
+  def retorna_telefone
+    begin
+      user = User.find(params[:id])
+
+      if user.nil?
+        render json: { error: "Usuário não encontrado" }, status: :not_found
+        return
+      end
+
+      telefone = Telefone.find_by(user_id: user.id)
+
+
+
+      if telefone.nil?
+        render json: { error: "Telefone não encontrado" }, status: :not_found
+      else
+        grouped_telefone = telefone.group_by { |telefone| telefone.user_id }
+
+        render json: grouped_telefone.map { |user_id, telefones|
+          {
+            user_id: user_id,
+            telefones: telefones.map { |telefone| telefone.numero }
+          }
+        }
+      end
+    rescue ActiveRecord::RecordNotFound => e
+      render json: { error: e.message }, status: :not_found
+    end
+  end
 end
