@@ -1,7 +1,14 @@
 class UsuariosController < ApplicationController
   def index
     @usuarios = User.all
-    render json: @usuarios
+    render json: {
+      usuarios: @usuarios.map do |usuario|
+        {
+          id: usuario.id,
+          username: usuario.username,
+          full_name: usuario.full_name }
+      end
+    }
   end
 
   def cria_usuario

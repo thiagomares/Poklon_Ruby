@@ -7,6 +7,7 @@ class Telefones < Metodos
 
   def validador_informacoes
     usuario = User.find_by(id: @user_id)
+    telefones = Telefone.where(user_id: usuario.id).pluck(:numero)
 
     # Verifica se os dados básicos estão presentes
     return { msg: "Dados não encontrados", status: :not_found } if @numero.nil? || @tipo.nil? || usuario.nil?
@@ -15,10 +16,8 @@ class Telefones < Metodos
     return { msg: "Telefone inválido", status: :unprocessable_entity } if @numero.length < 10 || @numero.length > 11
 
     # Verifica se o telefone já está cadastrado
-    telefones = Telefone.where(user_id: usuario.id).pluck(:numero)
-    if telefones.include?(@numero)
-      return { msg: "Telefone já cadastrado", status: :conflict }
-    end
+    return { msg: "Telefone já cadastrado", status: :conflict } if telefones.include?(@numero)
+
 
     { msg: "Validação bem-sucedida", status: :ok }
   end
@@ -30,7 +29,7 @@ class Telefones < Metodos
 
     telefones = Telefone.where(user_id: usuario.id)
 
-    return { msg: "Telefone não encontrado", status: :not_found } if telefones.empty?
+    return { msg: "O usuário #{usuario.username} não tem telefones cadastrados", status: :not_found } if telefones.empty?
 
     grouped_telefone = telefones.group_by(&:user_id)
 
