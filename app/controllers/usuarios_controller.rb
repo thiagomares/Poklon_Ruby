@@ -43,64 +43,43 @@ class UsuariosController < ApplicationController
 
   def adiciona_telefone
     begin
-      user = params[:user_id]
+      user_id = params[:user_id]
       numero = params[:numero]
       tipo = params[:tipo]
 
-      if user.blank? || numero.blank? || tipo.blank?
-        render json: { error: "Dados ausentes" }, status: :bad_request
-        return
+      validando_telefone = Telefones.new(numero, tipo, user_id)
+      validacao = validando_telefone.validador_informacoes
+
+      if validacao[:status] == :ok
+        telefone = Telefone.create!(numero: numero, tipo: tipo, user_id: user_id)
+        render json: telefone, status: :created
+      else
+        render json: { msg: validacao[:msg] }, status: validacao[:status]
       end
-
-      usuario = User.find_by(id: user)
-
-      if user.nil?
-        render json: { error: "Usuário não encontrado" }, status: :not_found
-        return
-      end
-
-      telefones_guardados = Telefone.where(user_id: usuario.id).pluck(:numero)
-
-      telefones_guardados.each do |telefone_guardado|
-        if telefone_guardado == numero
-          render json: { error: "Telefone já cadastrado" }, status: :conflict
-          return
-        end
-      end
-
-      telefone = Telefone.create(numero: numero, tipo: tipo, user_id: usuario.id)
-      render json: telefone, status: :created
-
     rescue ActiveRecord::RecordInvalid => e
       render json: { error: e.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { error: "Erro inesperado: #{e.message}" }, status: :internal_server_error
     end
   end
 
+
   def retorna_telefone
     begin
-      user = User.find(params[:id])
+      user_id = params[:user_id]
 
-      if user.nil?
-        render json: { error: "Usuário não encontrado" }, status: :not_found
-        return
-      end
+      busca_telefones = Telefones.new(nil, nil, user_id)
+      resultado = busca_telefones.busca_telefones
 
-      telefone = Telefone.find_by(user_id: user.id)
-
-      if telefone.nil?
-        render json: { error: "Telefone não encontrado" }, status: :not_found
+      if resultado.is_a?(Array)
+        render json: resultado, status: :ok
       else
-        grouped_telefone = telefone.group_by { |telefone| telefone.user_id }
-
-        render json: grouped_telefone.map { |user_id, telefones|
-          {
-            user_id: user_id,
-            telefones: telefones.map { |telefone| telefone.numero }
-          }
-        }
+        render json: { msg: resultado[:msg] }, status: resultado[:status]
       end
     rescue ActiveRecord::RecordNotFound => e
       render json: { error: e.message }, status: :not_found
+    rescue StandardError => e
+      render json: { error: "Erro inesperado: #{e.message}" }, status: :internal_server_error
     end
   end
 end
