@@ -89,4 +89,20 @@ class UsuariosController < ApplicationController
       render json: { error: "Erro inesperado: #{e.message}" }, status: :internal_server_error
     end
   end
+
+  def retorna_via_tipo
+    begin
+      tipo = params[:tipo]
+
+      necessitantes = Necessitantes.new(tipo)
+
+      if necessitantes.validador_informacoes[:status] != :unprocessable_entity
+        render json: necessitantes.validador_informacoes, status: :ok
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { error: "Erro inesperado: #{e.message}" }, status: :internal_server_error
+    end
+  end
 end

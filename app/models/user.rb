@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :doacaos, dependent: :destroy
+  has_many :telefones
 
   validates :username, presence: true, uniqueness: true
   validates :full_name, presence: true

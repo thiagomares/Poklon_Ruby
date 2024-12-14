@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   put "/doacoes", to: "doacoes#modifica_agendamento"
   post "/usuarios/telefone", to: "usuarios#adiciona_telefone"
   get "/usuarios/telefone", to: "usuarios#retorna_telefone"
+  get "/necessitantes", to: "usuarios#retorna_via_tipo"
   # Defines the root path route ("/")
   # root "posts#index"
 end
