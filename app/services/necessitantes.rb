@@ -28,7 +28,7 @@ class Necessitantes < Metodos
         username: usuario.username,
         nome_completo: usuario.full_name,
         tipo_sanguineo: usuario.tipo_sanguineo,
-        telefones: usuario.telefones.pluck(:numero), # Assumindo que o relacionamento está correto
+        telefones: usuario.telefones.pluck(:numero).distinct, # Assumindo que o relacionamento está correto
         ultima_doacao: ultima_doacao ? ultima_doacao.donation_date : nil, # Acessando diretamente a data da última doação
         total_doacoes: total_doacoes,
         status: :ok
