@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Poklon: development" uuid="582a6105-1e90-448e-9200-5422f6489039">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/config/database.yml</remarks>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:\\wsl.localhost\Ubuntu\home\thiagomares\Poklon\storage\development.sqlite3</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="Poklon: test" uuid="165edcdd-f239-4378-a2f1-92b623df014c">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/config/database.yml</remarks>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:\\wsl.localhost\Ubuntu\home\thiagomares\Poklon\storage\test.sqlite3</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>
